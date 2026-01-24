@@ -48,7 +48,7 @@ export const getOverviewMetrics = async (req: Request, res: Response) => {
     const customerData = await runQuerySingle(customerQuery, customerParams);
 
     // Rewards points
-    const rewardsQuery = `
+    let rewardsQuery = `
       SELECT 
         COALESCE(SUM(points_issued), 0) as points_issued,
         COALESCE(SUM(points_redeemed), 0) as points_redeemed,
@@ -59,7 +59,7 @@ export const getOverviewMetrics = async (req: Request, res: Response) => {
 
     let rewardsParams: any[] = [];
     if (startDate && endDate) {
-      rewardsQuery.replace('WHERE 1=1', 'WHERE created_at BETWEEN ? AND ?');
+      rewardsQuery += ' AND created_at BETWEEN ? AND ?';
       rewardsParams = [startDate, endDate];
     }
 
