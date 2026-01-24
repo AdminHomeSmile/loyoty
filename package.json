@@ -1,0 +1,21 @@
+{
+  "name": "loyalty-rewards-hub",
+  "version": "1.0.0",
+  "description": "Loyalty Rewards Hub with Analytics Dashboard",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "install": "npm install --workspaces",
+    "backend": "npm run dev --workspace=backend",
+    "frontend": "npm run dev --workspace=frontend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
