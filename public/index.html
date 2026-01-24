@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loyalty Rewards Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎁 Loyalty Rewards Hub</h1>
+            <p class="subtitle">Track your rewards and tier benefits</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Customer Selection Section -->
+            <section class="card">
+                <h2>Customer Dashboard</h2>
+                <div class="customer-selector">
+                    <select id="customerSelect" onchange="loadCustomer()">
+                        <option value="">Select a customer...</option>
+                    </select>
+                    <button onclick="showCreateCustomer()" class="btn btn-secondary">+ New Customer</button>
+                </div>
+
+                <!-- Create Customer Form -->
+                <div id="createCustomerForm" class="form-section" style="display: none;">
+                    <h3>Create New Customer</h3>
+                    <input type="text" id="customerId" placeholder="Customer ID" required>
+                    <input type="text" id="customerName" placeholder="Full Name" required>
+                    <input type="email" id="customerEmail" placeholder="Email" required>
+                    <div class="button-group">
+                        <button onclick="createCustomer()" class="btn btn-primary">Create</button>
+                        <button onclick="hideCreateCustomer()" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customer Details Section -->
+            <div id="customerDetails" style="display: none;">
+                <!-- Tier Display -->
+                <section class="card tier-card">
+                    <div class="tier-header">
+                        <div class="tier-badge-container">
+                            <div id="tierBadge" class="tier-badge"></div>
+                            <h2 id="tierName">Bronze Tier</h2>
+                        </div>
+                        <div class="points-display">
+                            <span id="totalPoints" class="points-number">0</span>
+                            <span class="points-label">Total Points</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span id="progressLabel">Progress to Silver</span>
+                            <span id="pointsNeeded">1000 points needed</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div id="progressBar" class="progress-bar"></div>
+                        </div>
+                        <div class="progress-percentage">
+                            <span id="progressPercentage">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Tier Benefits -->
+                    <div class="benefits-section">
+                        <h3>Your Tier Benefits</h3>
+                        <div id="tierBenefits" class="benefits-list"></div>
+                        <div class="multiplier-info">
+                            <span class="multiplier-label">Point Multiplier:</span>
+                            <span id="multiplier" class="multiplier-value">1.0x</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- All Tiers Overview -->
+                <section class="card">
+                    <h2>Tier System Overview</h2>
+                    <div class="tiers-overview">
+                        <div class="tier-overview bronze-tier">
+                            <div class="tier-icon">🥉</div>
+                            <h3>Bronze</h3>
+                            <p class="tier-range">0 - 999 points</p>
+                            <p class="tier-multiplier">1.0x multiplier</p>
+                        </div>
+                        <div class="tier-overview silver-tier">
+                            <div class="tier-icon">🥈</div>
+                            <h3>Silver</h3>
+                            <p class="tier-range">1,000 - 4,999 points</p>
+                            <p class="tier-multiplier">1.2x multiplier</p>
+                        </div>
+                        <div class="tier-overview gold-tier">
+                            <div class="tier-icon">🥇</div>
+                            <h3>Gold</h3>
+                            <p class="tier-range">5,000+ points</p>
+                            <p class="tier-multiplier">1.5x multiplier</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Points Management -->
+                <section class="card">
+                    <h2>Manage Points</h2>
+                    <div class="points-actions">
+                        <div class="action-form">
+                            <h3>Earn Points</h3>
+                            <input type="number" id="earnPoints" placeholder="Points to earn" min="1">
+                            <input type="text" id="earnDescription" placeholder="Description (optional)">
+                            <button onclick="addPoints()" class="btn btn-primary">Add Points</button>
+                        </div>
+                        <div class="action-form">
+                            <h3>Redeem Points</h3>
+                            <input type="number" id="redeemPoints" placeholder="Points to redeem" min="1">
+                            <input type="text" id="redeemDescription" placeholder="Description (optional)">
+                            <button onclick="redeemPoints()" class="btn btn-secondary">Redeem Points</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Transaction History -->
+                <section class="card">
+                    <h2>Recent Transactions</h2>
+                    <div id="transactions" class="transactions-list"></div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Notification Area -->
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
