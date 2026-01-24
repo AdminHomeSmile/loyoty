@@ -1,11 +1,18 @@
 """
 Notification service for handling customer notifications.
 """
+import logging
 from typing import List, Optional, Dict
 from models import (
     Customer, Notification, NotificationPreferences, MilestoneConfig,
     NotificationType, NotificationChannel, TierLevel, TIER_THRESHOLDS, MILESTONES
 )
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# Pre-sort tier thresholds for efficiency
+_SORTED_TIER_THRESHOLDS = sorted(TIER_THRESHOLDS.items(), key=lambda x: x[1], reverse=True)
 
 
 class NotificationService:
@@ -201,7 +208,7 @@ class NotificationService:
     def _calculate_tier(self, points: int) -> TierLevel:
         """Calculate the appropriate tier for given points."""
         tier = TierLevel.BRONZE
-        for level, threshold in sorted(TIER_THRESHOLDS.items(), key=lambda x: x[1], reverse=True):
+        for level, threshold in _SORTED_TIER_THRESHOLDS:
             if points >= threshold:
                 tier = level
                 break
@@ -227,5 +234,5 @@ class NotificationService:
             )
             return True
         except Exception as e:
-            print(f"Failed to send email to {customer.email}: {e}")
+            logger.error(f"Failed to send email to {customer.email}: {e}")
             return False

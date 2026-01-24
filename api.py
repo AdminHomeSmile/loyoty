@@ -167,7 +167,7 @@ class NotificationAPI:
             return {"status": "error", "message": "Customer not found"}
         
         customer = self.customers[customer_id]
-        unread_count = len([n for n in self.notification_service.get_notifications(customer_id) if not n.read])
+        unread_count = sum(1 for n in self.notification_service.get_notifications(customer_id) if not n.read)
         
         return {
             "status": "success",
