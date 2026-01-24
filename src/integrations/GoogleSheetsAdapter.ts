@@ -2,6 +2,7 @@ import { google, sheets_v4 } from 'googleapis';
 import { IExternalPlatform } from './IExternalPlatform';
 import { ExternalPlatformData, SalesTransaction, RewardsData } from '../models/SalesData';
 import { IntegrationConfig, SubmissionResult, SubmissionError } from '../models/IntegrationConfig';
+import { logger } from '../utils/logger';
 
 /**
  * Google Sheets integration adapter
@@ -47,7 +48,7 @@ export class GoogleSheetsAdapter implements IExternalPlatform {
 
       return true;
     } catch (error) {
-      console.error('Google Sheets connection test failed:', error);
+      logger.error('Google Sheets connection test failed', error);
       return false;
     }
   }
@@ -91,7 +92,7 @@ export class GoogleSheetsAdapter implements IExternalPlatform {
         'Description',
       ]);
     } catch (error) {
-      console.error('Failed to initialize Google Sheets:', error);
+      logger.error('Failed to initialize Google Sheets', error, { spreadsheetId });
       throw error;
     }
   }
@@ -140,7 +141,7 @@ export class GoogleSheetsAdapter implements IExternalPlatform {
         },
       });
     } catch (error) {
-      console.error(`Failed to create/update sheet ${sheetName}:`, error);
+      logger.error(`Failed to create/update sheet ${sheetName}`, error, { spreadsheetId });
       throw error;
     }
   }
@@ -152,7 +153,7 @@ export class GoogleSheetsAdapter implements IExternalPlatform {
     data: ExternalPlatformData,
     config: IntegrationConfig
   ): Promise<SubmissionResult> {
-    const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const submissionId = `sub_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     const errors: SubmissionError[] = [];
     let recordsSubmitted = 0;
 

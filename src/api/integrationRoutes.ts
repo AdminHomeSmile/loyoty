@@ -62,7 +62,11 @@ router.get('/:businessId', (req: Request, res: Response) => {
       ...config,
       credentials: {
         spreadsheetId: config.credentials.spreadsheetId,
-        // Don't return private keys or tokens
+        // Mask email for privacy
+        serviceAccountEmail: config.credentials.serviceAccountEmail 
+          ? `${config.credentials.serviceAccountEmail.split('@')[0].slice(0, 3)}***@${config.credentials.serviceAccountEmail.split('@')[1]}`
+          : undefined,
+        // Don't return private keys, tokens, or API keys
       },
     };
 

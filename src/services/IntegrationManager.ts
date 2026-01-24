@@ -2,6 +2,7 @@ import { IExternalPlatform } from '../integrations/IExternalPlatform';
 import { GoogleSheetsAdapter } from '../integrations/GoogleSheetsAdapter';
 import { ExternalPlatformData } from '../models/SalesData';
 import { IntegrationConfig, SubmissionResult, SubmissionError } from '../models/IntegrationConfig';
+import { logger } from '../utils/logger';
 
 /**
  * Manages external platform integrations
@@ -54,7 +55,7 @@ export class IntegrationManager {
       
       return true;
     } catch (error) {
-      console.error('Failed to configure integration:', error);
+      logger.error('Failed to configure integration', error, { businessId: config.businessId });
       return false;
     }
   }
@@ -150,7 +151,7 @@ export class IntegrationManager {
       this.logSubmission(data.businessId, result);
       
       // Queue for retry if failed
-      if (!result.success && result.errors) {
+      if (!result.success && result.errors && result.errors.length > 0) {
         await this.queueForRetry(data, config, result.errors);
       }
       
@@ -211,7 +212,11 @@ export class IntegrationManager {
     for (const item of itemsToRetry) {
       if (item.attempts >= item.config.settings.retryAttempts) {
         // Max retries reached, log and remove
-        console.error('Max retry attempts reached for submission:', item.data);
+        logger.error('Max retry attempts reached for submission', undefined, {
+          businessId,
+          transactionId: item.data.sales?.transactionId || item.data.rewards?.rewardId,
+          attempts: item.attempts,
+        });
         this.removeFromQueue(businessId, item);
         continue;
       }
@@ -269,11 +274,12 @@ export class IntegrationManager {
    * Log successful submission
    */
   private logSubmission(businessId: string, result: SubmissionResult): void {
-    console.log(`[${businessId}] Submission ${result.submissionId}:`, {
+    logger.info('Data submission completed', {
+      businessId,
+      submissionId: result.submissionId,
       success: result.success,
       recordsSubmitted: result.recordsSubmitted,
-      timestamp: result.timestamp,
-      errors: result.errors?.length || 0,
+      errorCount: result.errors?.length || 0,
     });
   }
 
