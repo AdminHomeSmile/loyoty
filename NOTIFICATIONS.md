@@ -1,5 +1,13 @@
 # Customer Notification System
 
+## UI Preview
+
+### Main Notification View
+![Notification System Main View](https://github.com/user-attachments/assets/de15af05-7068-4dfa-a14a-8a866d28b9b8)
+
+### Notification Preferences Modal
+![Notification Preferences](https://github.com/user-attachments/assets/1fbe071c-121c-412b-901e-a0c539dcffca)
+
 ## Overview
 
 This notification system provides real-time alerts to customers about important events in the loyalty rewards program, including:
@@ -163,6 +171,14 @@ Run the example demo:
 
 ```bash
 python example_usage.py
+```
+
+View the UI demo (open in browser):
+
+```bash
+# Serve the demo locally
+python -m http.server 8080
+# Then open http://localhost:8080/demo_ui.html in your browser
 ```
 
 ## API Response Format
