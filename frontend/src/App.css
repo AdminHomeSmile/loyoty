@@ -19,3 +19,23 @@
   font-size: 1rem;
   opacity: 0.9;
 }
+
+.app-tabs {
+  display: flex;
+  gap: 10px;
+  padding: 16px 20px;
+}
+
+.app-tabs button {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.app-tabs button.active {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}

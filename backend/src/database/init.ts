@@ -88,10 +88,81 @@ export const initDatabase = async (): Promise<void> => {
           )
         `);
 
+        
+        // Technicians table
+        db.run(`
+          CREATE TABLE IF NOT EXISTS technicians (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            full_name TEXT NOT NULL,
+            phone TEXT UNIQUE NOT NULL,
+            area TEXT NOT NULL,
+            skill_level TEXT DEFAULT 'junior',
+            points_balance INTEGER DEFAULT 0,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
+        // Missions table
+        db.run(`
+          CREATE TABLE IF NOT EXISTS missions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            description TEXT,
+            points_reward INTEGER NOT NULL,
+            frequency TEXT DEFAULT 'daily',
+            is_active INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
+        // Mission completions
+        db.run(`
+          CREATE TABLE IF NOT EXISTS technician_missions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            technician_id INTEGER NOT NULL,
+            mission_id INTEGER NOT NULL,
+            points_earned INTEGER NOT NULL,
+            completed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (technician_id) REFERENCES technicians(id),
+            FOREIGN KEY (mission_id) REFERENCES missions(id)
+          )
+        `);
+
+        // Reward catalog
+        db.run(`
+          CREATE TABLE IF NOT EXISTS reward_catalog (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_name TEXT NOT NULL,
+            points_cost INTEGER NOT NULL,
+            stock INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          )
+        `);
+
+        // Reward redemptions
+        db.run(`
+          CREATE TABLE IF NOT EXISTS reward_redemptions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            technician_id INTEGER NOT NULL,
+            reward_id INTEGER NOT NULL,
+            points_spent INTEGER NOT NULL,
+            redeemed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (technician_id) REFERENCES technicians(id),
+            FOREIGN KEY (reward_id) REFERENCES reward_catalog(id)
+          )
+        `);
+
         // Insert sample data if tables are empty
         db.get('SELECT COUNT(*) as count FROM products', (err, row: any) => {
           if (!err && row.count === 0) {
             insertSampleData(db);
+          }
+        });
+
+        db.get('SELECT COUNT(*) as count FROM missions', (err, row: any) => {
+          if (!err && row.count === 0) {
+            insertTechnicianRewardsSeedData(db);
           }
         });
 
@@ -184,6 +255,54 @@ const insertSampleData = (database: sqlite3.Database) => {
   console.log('Sample data inserted successfully');
 };
 
+
+const insertTechnicianRewardsSeedData = (database: sqlite3.Database) => {
+  console.log('Inserting technician rewards seed data...');
+
+  const missions = [
+    {
+      title: 'ปิดงานติดตั้งครบ 1 งาน',
+      description: 'อัปเดตสถานะงานติดตั้งพร้อมรูปหน้างาน',
+      points: 40,
+      frequency: 'daily',
+    },
+    {
+      title: 'เช็คอินหน้างานตรงเวลา',
+      description: 'เช็คอินก่อนเวลานัดอย่างน้อย 10 นาที',
+      points: 25,
+      frequency: 'daily',
+    },
+    {
+      title: 'ผ่านอบรมสินค้าใหม่',
+      description: 'ทำแบบทดสอบจบและผ่านเกณฑ์ 80%',
+      points: 150,
+      frequency: 'once',
+    },
+  ];
+
+  const rewards = [
+    { itemName: 'เสื้อช่าง Limited Edition', pointsCost: 200, stock: 20 },
+    { itemName: 'บัตรเติมน้ำมัน 300 บาท', pointsCost: 350, stock: 15 },
+    { itemName: 'เครื่องมือช่างพรีเมียม', pointsCost: 600, stock: 10 },
+  ];
+
+  const missionStmt = database.prepare(
+    'INSERT INTO missions (title, description, points_reward, frequency) VALUES (?, ?, ?, ?)'
+  );
+  missions.forEach((mission) => {
+    missionStmt.run(mission.title, mission.description, mission.points, mission.frequency);
+  });
+  missionStmt.finalize();
+
+  const rewardStmt = database.prepare(
+    'INSERT INTO reward_catalog (item_name, points_cost, stock) VALUES (?, ?, ?)'
+  );
+  rewards.forEach((reward) => {
+    rewardStmt.run(reward.itemName, reward.pointsCost, reward.stock);
+  });
+  rewardStmt.finalize();
+};
+
 export const runQuery = (sql: string, params: any[] = []): Promise<any[]> => {
   return new Promise((resolve, reject) => {
     getDatabase().all(sql, params, (err, rows) => {
@@ -203,6 +322,22 @@ export const runQuerySingle = (sql: string, params: any[] = []): Promise<any> =>
         reject(err);
       } else {
         resolve(row);
+      }
+    });
+  });
+};
+
+
+export const runExecute = (
+  sql: string,
+  params: any[] = []
+): Promise<{ lastID: number; changes: number }> => {
+  return new Promise((resolve, reject) => {
+    getDatabase().run(sql, params, function (err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ lastID: this.lastID, changes: this.changes });
       }
     });
   });

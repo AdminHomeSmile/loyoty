@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ProductCategory } from '../types';
 
 interface CategoryChartProps {
@@ -27,7 +27,7 @@ const CategoryChart: React.FC<CategoryChartProps> = ({ data }) => {
           fill="#8884d8"
           dataKey="value"
         >
-          {chartData.map((entry, index) => (
+          {chartData.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
           ))}
         </Pie>

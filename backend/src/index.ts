@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import analyticsRouter from './routes/analytics';
 import { initDatabase } from './database/init';
+import technicianRewardsRouter from './routes/technicianRewards';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/analytics', analyticsRouter);
+app.use('/api/technician-rewards', technicianRewardsRouter);
 
 // Health check
 app.get('/health', (req, res) => {
